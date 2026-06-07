@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Courier; -webkit-text-stroke: #000000}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Courier; -webkit-text-stroke: #000000; min-height: 16.0px}
+    li.li2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+    span.s2 {-webkit-text-stroke: 0px #000000}
+    ul.ul1 {list-style-type: disc}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1"><i>Thinking...</i><i></i></span></p>
+<blockquote style="margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000"><span class="s1">The user wants me to create a 30-day challenge tracker/plan based on the given daily goals. I'll create an interactive HTML app for this since they're asking for a challenge tracker which is essentially an interactive tool.</span></blockquote>
+<blockquote style="margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000"><span class="s1">Let me build a nice 30-day challenge tracker with:</span></blockquote>
+<ul class="ul1">
+  <li class="li2"><span class="s2"></span><span class="s1">Daily checklist for each goal</span></li>
+  <li class="li2"><span class="s2"></span><span class="s1">Progress tracking</span></li>
+  <li class="li2"><span class="s2"></span><span class="s1">Visual calendar/grid showing 30 days</span></li>
+  <li class="li2"><span class="s2"></span><span class="s1">Ability to check off each day's goals</span></li>
+  <li class="li2"><span class="s2"></span><span class="s1">Progress visualization</span></li>
+</ul>
+<blockquote style="margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000"><span class="s1">Let me design this well with a clean, motivating UI.</span></blockquote>
+<p class="p3"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p3"><span class="s1">&lt;html lang="en"&gt;</span></p>
+<p class="p3"><span class="s1">&lt;head&gt;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8" /&gt;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;30-Day Challenge&lt;/title&gt;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; margin: 0; padding: 0; }</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>body {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-family: 'Segoe UI', sans-serif;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #0f0f1a;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #fff;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>min-height: 100vh;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>header {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: linear-gradient(135deg, #1a1a2e, #16213e);</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 24px 20px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>text-align: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-bottom: 1px solid #ffffff15;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>header h1 {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: clamp(1.4rem, 5vw, 2rem);</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-weight: 800;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e);</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>-webkit-background-clip: text;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>-webkit-text-fill-color: transparent;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background-clip: text;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>letter-spacing: 1px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>header p {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #aaa;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin-top: 6px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.9rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.overall-progress {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #1a1a2e;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin: 20px 16px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 16px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 20px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border: 1px solid #ffffff10;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.overall-progress h2 {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.85rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #888;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>text-transform: uppercase;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>letter-spacing: 1px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin-bottom: 12px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.progress-bar-wrap {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #0f0f1a;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 999px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>height: 14px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>overflow: hidden;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.progress-bar-fill {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>height: 100%;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 999px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: linear-gradient(90deg, #f7971e, #ffd200);</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>transition: width 0.5s ease;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.progress-stats {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>justify-content: space-between;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.85rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #aaa;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.progress-stats span b {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #ffd200;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.habits-legend {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>flex-wrap: wrap;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>gap: 8px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin: 0 16px 16px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.habit-badge {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>align-items: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>gap: 6px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #1a1a2e;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border: 1px solid #ffffff10;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 999px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 5px 12px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.78rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #ccc;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.habit-badge .dot {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>width: 8px; height: 8px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 50%;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.days-grid {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: grid;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>gap: 10px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 0 16px 16px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-card {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #1a1a2e;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border: 1px solid #ffffff10;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 14px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 12px 10px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>cursor: pointer;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>transition: transform 0.15s, border-color 0.2s;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>position: relative;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-card:hover { transform: translateY(-2px); border-color: #ffffff30; }</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-card.completed { border-color: #ffd20060; }</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-card.today { border-color: #f7971e; box-shadow: 0 0 12px #f7971e40; }</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-label {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.7rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #666;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>text-transform: uppercase;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>letter-spacing: 0.5px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-num {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 1.3rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-weight: 800;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #fff;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin: 2px 0 8px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.mini-habits {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>flex-wrap: wrap;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>gap: 3px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.mini-dot {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>width: 10px; height: 10px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 50%;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>opacity: 0.25;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>transition: opacity 0.2s;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.mini-dot.done { opacity: 1; }</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-score {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>position: absolute;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>top: 8px; right: 10px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.7rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-weight: 700;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #ffd200;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>opacity: 0;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>transition: opacity 0.2s;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.day-card.has-progress .day-score { opacity: 1; }</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>/* Modal */</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.modal-overlay {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: none;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>position: fixed;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>inset: 0;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #000000cc;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>z-index: 100;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>align-items: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>justify-content: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 16px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.modal-overlay.open { display: flex; }</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.modal {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #1a1a2e;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border: 1px solid #ffffff15;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 20px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 24px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>width: 100%;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>max-width: 400px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>max-height: 90vh;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>overflow-y: auto;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.modal-header {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>justify-content: space-between;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>align-items: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>margin-bottom: 20px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.modal-header h2 {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 1.1rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-weight: 700;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.modal-header .today-badge {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 0.7rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #f7971e;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #000;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 3px 8px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 999px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-weight: 700;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.close-btn {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>background: #ffffff10;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border: none;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>color: #fff;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>width: 30px; height: 30px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 50%;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>cursor: pointer;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 1rem;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex; align-items: center; justify-content: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.habit-item {</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>display: flex;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>align-items: center;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>gap: 14px;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>padding: 14px 0;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>border-bottom: 1px solid #ffffff08;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>cursor: pointer;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">      </span>transition: opacity 0.15s;</span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>.habit-item:last-child { border-bottom: none; }</span></p>
+</body>
+</html>
