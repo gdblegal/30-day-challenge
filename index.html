@@ -6,231 +6,268 @@
   <title>30-Day Challenge</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f0f1a;
-      color: #fff;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      padding: 24px 20px;
-      text-align: center;
-      border-bottom: 1px solid #ffffff15;
-    }
-
-    header h1 {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      font-weight: 800;
-      background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 1px;
-    }
-
-    header p {
-      color: #aaa;
-      margin-top: 6px;
-      font-size: 0.9rem;
-    }
-
-    .overall-progress {
-      background: #1a1a2e;
-      margin: 20px 16px;
-      border-radius: 16px;
-      padding: 20px;
-      border: 1px solid #ffffff10;
-    }
-
-    .overall-progress h2 {
-      font-size: 0.85rem;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-
-    .progress-bar-wrap {
-      background: #0f0f1a;
-      border-radius: 999px;
-      height: 14px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #f7971e, #ffd200);
-      transition: width 0.5s ease;
-    }
-
-    .progress-stats {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: #aaa;
-    }
-
-    .progress-stats span b {
-      color: #ffd200;
-    }
-
-    .habits-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 0 16px 16px;
-    }
-
-    .habit-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #1a1a2e;
-      border: 1px solid #ffffff10;
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 0.78rem;
-      color: #ccc;
-    }
-
-    .habit-badge .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-    }
-
-    .days-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
-      gap: 10px;
-      padding: 0 16px 16px;
-    }
-
-    .day-card {
-      background: #1a1a2e;
-      border: 1px solid #ffffff10;
-      border-radius: 14px;
-      padding: 12px 10px;
-      cursor: pointer;
-      transition: transform 0.15s, border-color 0.2s;
-      position: relative;
-    }
-
+    body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; }
+    header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 24px 20px; text-align: center; border-bottom: 1px solid #ffffff15; }
+    header h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 800; background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; }
+    header p { color: #aaa; margin-top: 6px; font-size: 0.9rem; }
+    .overall-progress { background: #1a1a2e; margin: 20px 16px; border-radius: 16px; padding: 20px; border: 1px solid #ffffff10; }
+    .overall-progress h2 { font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .progress-bar-wrap { background: #0f0f1a; border-radius: 999px; height: 14px; overflow: hidden; margin-bottom: 10px; }
+    .progress-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #f7971e, #ffd200); transition: width 0.5s ease; }
+    .progress-stats { display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa; }
+    .progress-stats span b { color: #ffd200; }
+    .habits-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 16px 16px; }
+    .habit-badge { display: flex; align-items: center; gap: 6px; background: #1a1a2e; border: 1px solid #ffffff10; border-radius: 999px; padding: 5px 12px; font-size: 0.78rem; color: #ccc; }
+    .habit-badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; padding: 0 16px 80px; }
+    .day-card { background: #1a1a2e; border: 1px solid #ffffff10; border-radius: 14px; padding: 12px 10px; cursor: pointer; transition: transform 0.15s, border-color 0.2s; position: relative; }
     .day-card:hover { transform: translateY(-2px); border-color: #ffffff30; }
-
     .day-card.completed { border-color: #ffd20060; }
     .day-card.today { border-color: #f7971e; box-shadow: 0 0 12px #f7971e40; }
-
-    .day-label {
-      font-size: 0.7rem;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .day-num {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: #fff;
-      margin: 2px 0 8px;
-    }
-
-    .mini-habits {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px;
-    }
-
-    .mini-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      opacity: 0.25;
-      transition: opacity 0.2s;
-    }
-
+    .day-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+    .day-num { font-size: 1.3rem; font-weight: 800; color: #fff; margin: 2px 0 8px; }
+    .mini-habits { display: flex; flex-wrap: wrap; gap: 3px; }
+    .mini-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.25; transition: opacity 0.2s; }
     .mini-dot.done { opacity: 1; }
-
-    .day-score {
-      position: absolute;
-      top: 8px; right: 10px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: #ffd200;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
+    .day-score { position: absolute; top: 8px; right: 10px; font-size: 0.7rem; font-weight: 700; color: #ffd200; opacity: 0; transition: opacity 0.2s; }
     .day-card.has-progress .day-score { opacity: 1; }
-
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #000000cc;
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
+    .modal-overlay { display: none; position: fixed; inset: 0; background: #000000cc; z-index: 100; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.open { display: flex; }
-
-    .modal {
-      background: #1a1a2e;
-      border: 1px solid #ffffff15;
-      border-radius: 20px;
-      padding: 24px;
-      width: 100%;
-      max-width: 400px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-header h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .modal-header .today-badge {
-      font-size: 0.7rem;
-      background: #f7971e;
-      color: #000;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-weight: 700;
-    }
-
-    .close-btn {
-      background: #ffffff10;
-      border: none;
-      color: #fff;
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .habit-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid #ffffff08;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
+    .modal { background: #1a1a2e; border: 1px solid #ffffff15; border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .today-badge { font-size: 0.7rem; background: #f7971e; color: #000; padding: 3px 8px; border-radius: 999px; font-weight: 700; }
+    .close-btn { background: #ffffff10; border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+    .habit-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #ffffff08; cursor: pointer; transition: opacity 0.15s; user-select: none; }
     .habit-item:last-child { border-bottom: none; }
+    .habit-item:hover { opacity: 0.85; }
+    .habit-icon { font-size: 1.4rem; width: 36px; text-align: center; }
+    .habit-info { flex: 1; }
+    .habit-name { font-size: 0.95rem; font-weight: 600; }
+    .habit-target { font-size: 0.78rem; color: #888; margin-top: 2px; }
+    .habit-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: all 0.2s; flex-shrink: 0; }
+    .habit-check.checked { background: linear-gradient(135deg, #f7971e, #ffd200); border-color: transparent; color: #000; font-weight: 700; }
+    .modal-footer { margin-top: 20px; text-align: center; }
+    .save-btn { background: linear-gradient(135deg, #f7971e, #ffd200); color: #000; border: none; border-radius: 999px; padding: 12px 36px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.2s; }
+    .save-btn:hover { opacity: 0.9; }
+    .day-complete-badge { display: none; text-align: center; margin-top: 16px; font-size: 0.85rem; color: #ffd200; font-weight: 600; }
+    .day-complete-badge.show { display: block; }
+    .streak-bar { display: flex; gap: 12px; margin: 0 16px 20px; }
+    .streak-card { flex: 1; background: #1a1a2e; border: 1px solid #ffffff10; border-radius: 14px; padding: 14px; text-align: center; }
+    .streak-card .val { font-size: 1.6rem; font-weight: 800; color: #ffd200; }
+    .streak-card .lbl { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔥 30-Day Challenge</h1>
+    <p>Track your daily habits — one day at a time</p>
+  </header>
+
+  <div class="overall-progress">
+    <h2>Overall Progress</h2>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="overall-bar" style="width: 0%"></div>
+    </div>
+    <div class="progress-stats">
+      <span><b id="days-done">0</b> days completed</span>
+      <span><b id="days-left">30</b> days left</span>
+    </div>
+  </div>
+
+  <div class="streak-bar">
+    <div class="streak-card">
+      <div class="val" id="current-streak">0</div>
+      <div class="lbl">🔥 Streak</div>
+    </div>
+    <div class="streak-card">
+      <div class="val" id="best-streak">0</div>
+      <div class="lbl">⭐ Best</div>
+    </div>
+    <div class="streak-card">
+      <div class="val" id="total-habits">0</div>
+      <div class="lbl">✅ Habits</div>
+    </div>
+  </div>
+
+  <div class="habits-legend" id="habits-legend"></div>
+  <div class="days-grid" id="days-grid"></div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Day 1</h2>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="today-badge" id="today-badge" style="display:none">TODAY</span>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+      </div>
+      <div id="habits-list"></div>
+      <div class="modal-footer">
+        <button class="save-btn" onclick="saveDay()">Save Day</button>
+        <div class="day-complete-badge" id="complete-badge">🎉 Perfect Day! All habits done!</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const HABITS = [
+      { id: 'calories', icon: '🥗', name: 'Calorie Goal', target: '1000 calories max',  color: '#4ade80' },
+      { id: 'workout',  icon: '💪', name: 'Workout',      target: '45 minutes',          color: '#f87171' },
+      { id: 'steps',   icon: '👟', name: 'Steps',         target: 'Min 5,000 steps',     color: '#60a5fa' },
+      { id: 'water',   icon: '💧', name: 'Water',         target: '2 litres',            color: '#38bdf8' },
+      { id: 'sleep',   icon: '😴', name: 'Sleep',         target: '7 hours',             color: '#a78bfa' },
+    ];
+
+    const TOTAL_DAYS = 30;
+    let data = {};
+    let currentDay = null;
+    let tempChecks = {};
+
+    try {
+      const saved = localStorage.getItem('30day_challenge_v2');
+      if (saved) data = JSON.parse(saved);
+    } catch(e) {}
+
+    function save() {
+      try { localStorage.setItem('30day_challenge_v2', JSON.stringify(data)); } catch(e) {}
+    }
+
+    function getDayScore(dayNum) {
+      const d = data[dayNum];
+      if (!d) return 0;
+      return HABITS.filter(h => d[h.id]).length;
+    }
+
+    function isDayComplete(dayNum) {
+      return getDayScore(dayNum) === HABITS.length;
+    }
+
+    function buildLegend() {
+      document.getElementById('habits-legend').innerHTML = HABITS.map(h => `
+        <div class="habit-badge">
+          <div class="dot" style="background:${h.color}"></div>
+          ${h.icon} ${h.name}
+        </div>
+      `).join('');
+    }
+
+    function buildGrid() {
+      const grid = document.getElementById('days-grid');
+      grid.innerHTML = '';
+      for (let d = 1; d <= TOTAL_DAYS; d++) {
+        const score = getDayScore(d);
+        const complete = isDayComplete(d);
+        const card = document.createElement('div');
+        card.className = 'day-card' + (complete ? ' completed' : '') + (score > 0 ? ' has-progress' : '');
+        card.innerHTML = `
+          <div class="day-score">${score}/${HABITS.length}</div>
+          <div class="day-label">Day</div>
+          <div class="day-num">${d}</div>
+          <div class="mini-habits">
+            ${HABITS.map(h => `<div class="mini-dot ${data[d] && data[d][h.id] ? 'done' : ''}" style="background:${h.color}" title="${h.name}"></div>`).join('')}
+          </div>
+        `;
+        card.onclick = () => openModal(d);
+        grid.appendChild(card);
+      }
+    }
+
+    function updateStats() {
+      let completedDays = 0;
+      let totalHabitsDone = 0;
+      let bestStreak = 0;
+      let streakCount = 0;
+
+      for (let d = 1; d <= TOTAL_DAYS; d++) {
+        totalHabitsDone += getDayScore(d);
+        if (isDayComplete(d)) {
+          completedDays++;
+          streakCount++;
+          bestStreak = Math.max(bestStreak, streakCount);
+        } else {
+          streakCount = 0;
+        }
+      }
+
+      let currentStreak = 0;
+      for (let d = TOTAL_DAYS; d >= 1; d--) {
+        if (isDayComplete(d)) currentStreak++;
+        else break;
+      }
+
+      document.getElementById('days-done').textContent = completedDays;
+      document.getElementById('days-left').textContent = TOTAL_DAYS - completedDays;
+      document.getElementById('overall-bar').style.width = ((completedDays / TOTAL_DAYS) * 100) + '%';
+      document.getElementById('current-streak').textContent = currentStreak;
+      document.getElementById('best-streak').textContent = bestStreak;
+      document.getElementById('total-habits').textContent = totalHabitsDone;
+    }
+
+    function openModal(dayNum) {
+      currentDay = dayNum;
+      tempChecks = Object.assign({}, data[dayNum] || {});
+      document.getElementById('modal-title').textContent = 'Day ' + dayNum;
+      document.getElementById('today-badge').style.display = 'none';
+      renderHabitsList();
+      updateCompleteBadge();
+      document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function renderHabitsList() {
+      document.getElementById('habits-list').innerHTML = HABITS.map(h => `
+        <div class="habit-item" onclick="toggleHabit('${h.id}')">
+          <div class="habit-icon">${h.icon}</div>
+          <div class="habit-info">
+            <div class="habit-name">${h.name}</div>
+            <div class="habit-target">${h.target}</div>
+          </div>
+          <div class="habit-check ${tempChecks[h.id] ? 'checked' : ''}" id="check-${h.id}">
+            ${tempChecks[h.id] ? '✓' : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleHabit(habitId) {
+      tempChecks[habitId] = !tempChecks[habitId];
+      const el = document.getElementById('check-' + habitId);
+      if (tempChecks[habitId]) {
+        el.classList.add('checked');
+        el.textContent = '✓';
+      } else {
+        el.classList.remove('checked');
+        el.textContent = '';
+      }
+      updateCompleteBadge();
+    }
+
+    function updateCompleteBadge() {
+      const allDone = HABITS.every(h => tempChecks[h.id]);
+      document.getElementById('complete-badge').classList.toggle('show', allDone);
+    }
+
+    function saveDay() {
+      data[currentDay] = { ...tempChecks };
+      save();
+      buildGrid();
+      updateStats();
+      closeModal();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+      currentDay = null;
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    buildLegend();
+    buildGrid();
+    updateStats();
+  </script>
+</body>
+</html>
