@@ -1,13 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>30-Day Challenge</title>
+
+  <!-- Firebase v10 Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; }
-    header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 24px 20px; text-align: center; border-bottom: 1px solid #ffffff15; }
+
+    /* ── Loading ── */
+    #loading-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+    .spinner { width: 44px; height: 44px; border: 3px solid #ffffff15; border-top-color: #ffd200; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: #555; font-size: 0.9rem; }
+
+    /* ── Login ── */
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: linear-gradient(135deg, #0f0f1a, #1a1a2e); }
+    .login-card { background: #1a1a2e; border: 1px solid #ffffff15; border-radius: 24px; padding: 40px 28px; max-width: 360px; width: 100%; text-align: center; }
+    .login-emoji { font-size: 3rem; display: block; margin-bottom: 14px; }
+    .login-title { font-size: 1.9rem; font-weight: 800; background: linear-gradient(90deg, #f7971e, #ffd200); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+    .login-sub { color: #777; font-size: 0.88rem; line-height: 1.6; margin-bottom: 28px; }
+    .features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; text-align: left; }
+    .feature { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: #999; }
+    .feature-icon { font-size: 1rem; width: 22px; text-align: center; flex-shrink: 0; }
+    .google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; background: #fff; color: #222; border: none; border-radius: 999px; padding: 14px 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%; transition: box-shadow 0.2s, transform 0.1s; }
+    .google-btn:hover { box-shadow: 0 6px 24px #f7971e30; transform: translateY(-1px); }
+    .google-btn:active { transform: translateY(0); }
+    .login-note { font-size: 0.72rem; color: #444; margin-top: 18px; line-height: 1.6; }
+
+    /* ── User bar ── */
+    .user-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: #0a0a14; border-bottom: 1px solid #ffffff08; }
+    .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #ffd20030; flex-shrink: 0; background: #333; }
+    .user-name { font-size: 0.8rem; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+    .user-bar-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .sync-status { display: flex; align-items: center; gap: 5px; }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; transition: background 0.3s; }
+    .sync-dot.syncing { background: #ffd200; animation: pulse-dot 1s infinite; }
+    .sync-dot.error   { background: #f87171; }
+    @keyframes pulse-dot { 0%,100%{opacity:1}50%{opacity:0.3} }
+    .sync-label { font-size: 0.7rem; color: #555; }
+    .signout-btn { background: #ffffff08; border: 1px solid #ffffff10; color: #666; border-radius: 999px; padding: 5px 12px; font-size: 0.73rem; cursor: pointer; transition: all 0.2s; }
+    .signout-btn:hover { background: #ffffff15; color: #ccc; }
+
+    /* ── Main app ── */
+    header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px; text-align: center; border-bottom: 1px solid #ffffff15; }
     header h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 800; background: linear-gradient(90deg, #f7971e, #ffd200, #f7971e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; }
     header p { color: #aaa; margin-top: 6px; font-size: 0.9rem; }
     .overall-progress { background: #1a1a2e; margin: 20px 16px; border-radius: 16px; padding: 20px; border: 1px solid #ffffff10; }
@@ -26,11 +69,34 @@
     .day-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
     .day-num { font-size: 1.3rem; font-weight: 800; color: #fff; margin: 2px 0 8px; }
     .mini-habits { display: flex; flex-wrap: wrap; gap: 3px; }
-    .mini-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.25; transition: opacity 0.2s; }
+    .mini-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.2; transition: opacity 0.2s; }
     .mini-dot.done { opacity: 1; }
-    .day-score { position: absolute; top: 8px; right: 10px; font-size: 0.7rem; font-weight: 700; color: #ffd200; opacity: 0; transition: opacity 0.2s; }
+    .day-score { position: absolute; top: 8px; right: 10px; font-size: 0.7rem; font-weight: 700; color: #ffd200; opacity: 0; }
     .day-card.has-progress .day-score { opacity: 1; }
     .scale-icon { font-size: 0.65rem; position: absolute; bottom: 7px; right: 8px; }
+    .streak-bar { display: flex; gap: 12px; margin: 0 16px 20px; }
+    .streak-card { flex: 1; background: #1a1a2e; border: 1px solid #ffffff10; border-radius: 14px; padding: 14px; text-align: center; }
+    .streak-card .val { font-size: 1.6rem; font-weight: 800; color: #ffd200; }
+    .streak-card .lbl { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+    /* ── Weight section ── */
+    .weight-section { background: #1a1a2e; margin: 0 16px 20px; border-radius: 16px; padding: 20px; border: 1px solid #a78bfa30; }
+    .weight-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .weight-section-title { font-size: 0.85rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .unit-toggle { display: flex; border-radius: 999px; overflow: hidden; border: 1.5px solid #a78bfa50; }
+    .unit-btn { background: transparent; border: none; color: #888; font-size: 0.72rem; font-weight: 600; padding: 5px 11px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .unit-btn.active { background: #a78bfa; color: #000; }
+    .weight-entries { display: flex; gap: 10px; }
+    .weight-entry { flex: 1; background: #0f0f1a; border-radius: 12px; padding: 12px 8px; text-align: center; min-width: 0; }
+    .weight-entry .we-label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 6px; }
+    .weight-entry .we-val { font-size: clamp(0.78rem, 2.4vw, 1.1rem); font-weight: 800; color: #a78bfa; word-break: break-word; line-height: 1.3; }
+    .weight-entry .we-val.empty { color: #333; font-weight: 400; }
+    .weight-diff { text-align: center; margin-top: 12px; font-size: 0.85rem; font-weight: 600; }
+    .weight-diff .loss { color: #4ade80; }
+    .weight-diff .gain { color: #f87171; }
+    .weight-diff .neutral { color: #888; }
+
+    /* ── Modal ── */
     .modal-overlay { display: none; position: fixed; inset: 0; background: #000000cc; z-index: 100; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.open { display: flex; }
     .modal { background: #1a1a2e; border: 1px solid #ffffff15; border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
@@ -52,29 +118,8 @@
     .save-btn:hover { opacity: 0.9; }
     .day-complete-badge { display: none; text-align: center; margin-top: 16px; font-size: 0.85rem; color: #ffd200; font-weight: 600; }
     .day-complete-badge.show { display: block; }
-    .streak-bar { display: flex; gap: 12px; margin: 0 16px 20px; }
-    .streak-card { flex: 1; background: #1a1a2e; border: 1px solid #ffffff10; border-radius: 14px; padding: 14px; text-align: center; }
-    .streak-card .val { font-size: 1.6rem; font-weight: 800; color: #ffd200; }
-    .streak-card .lbl { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
-    /* Weight Section */
-    .weight-section { background: #1a1a2e; margin: 0 16px 20px; border-radius: 16px; padding: 20px; border: 1px solid #a78bfa30; }
-    .weight-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .weight-section-title { font-size: 0.85rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-    .unit-toggle { display: flex; border-radius: 999px; overflow: hidden; border: 1.5px solid #a78bfa50; }
-    .unit-btn { background: transparent; border: none; color: #888; font-size: 0.72rem; font-weight: 600; padding: 5px 11px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .unit-btn.active { background: #a78bfa; color: #000; }
-    .weight-entries { display: flex; gap: 10px; }
-    .weight-entry { flex: 1; background: #0f0f1a; border-radius: 12px; padding: 12px 8px; text-align: center; min-width: 0; }
-    .weight-entry .we-label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 6px; }
-    .weight-entry .we-val { font-size: clamp(0.78rem, 2.4vw, 1.1rem); font-weight: 800; color: #a78bfa; word-break: break-word; line-height: 1.3; }
-    .weight-entry .we-val.empty { color: #333; font-weight: 400; }
-    .weight-diff { text-align: center; margin-top: 12px; font-size: 0.85rem; font-weight: 600; }
-    .weight-diff .loss { color: #4ade80; }
-    .weight-diff .gain { color: #f87171; }
-    .weight-diff .neutral { color: #888; }
-
-    /* Weigh-in modal */
+    /* ── Weigh-in modal section ── */
     .weigh-in-box { background: #0f0f1a; border-radius: 14px; padding: 16px; margin-bottom: 16px; border: 1px solid #a78bfa50; }
     .weigh-in-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .weigh-in-box-title { font-size: 0.8rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
@@ -87,7 +132,7 @@
     .weigh-in-unit { color: #888; font-size: 0.9rem; white-space: nowrap; }
     .stlbs-row { display: flex; align-items: center; gap: 10px; }
     .stlbs-group { display: flex; align-items: center; gap: 6px; flex: 1; }
-    .stlbs-input { background: #1a1a2e; border: 1.5px solid #a78bfa50; border-radius: 10px; padding: 10px 10px; color: #fff; font-size: 1.1rem; font-weight: 700; width: 100%; outline: none; transition: border-color 0.2s; }
+    .stlbs-input { background: #1a1a2e; border: 1.5px solid #a78bfa50; border-radius: 10px; padding: 10px; color: #fff; font-size: 1.1rem; font-weight: 700; width: 100%; outline: none; transition: border-color 0.2s; }
     .stlbs-input:focus { border-color: #a78bfa; }
     .stlbs-unit { color: #888; font-size: 0.9rem; white-space: nowrap; }
     .weigh-in-prev { margin-top: 10px; font-size: 0.78rem; color: #666; }
@@ -95,6 +140,53 @@
   </style>
 </head>
 <body>
+
+<!-- ── Loading Screen ── -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading…</div>
+</div>
+
+<!-- ── Login Screen ── -->
+<div id="login-screen" style="display:none">
+  <div class="login-card">
+    <span class="login-emoji">🔥</span>
+    <div class="login-title">30-Day Challenge</div>
+    <div class="login-sub">Sign in to keep your progress safe and synced across all your devices.</div>
+    <div class="features">
+      <div class="feature"><span class="feature-icon">☁️</span> Syncs across phone, tablet &amp; desktop</div>
+      <div class="feature"><span class="feature-icon">🔒</span> Private — only you can see your data</div>
+      <div class="feature"><span class="feature-icon">⚡</span> Real-time updates between devices</div>
+    </div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continue with Google
+    </button>
+    <div class="login-note">🔐 Only your Google account ID is used to link your data. We never access your Google account content or store your password.</div>
+  </div>
+</div>
+
+<!-- ── Main App ── -->
+<div id="main-app" style="display:none">
+
+  <div class="user-bar">
+    <div class="user-info">
+      <img class="user-avatar" id="user-avatar" src="" alt="" onerror="this.style.display='none'"/>
+      <span class="user-name" id="user-name"></span>
+    </div>
+    <div class="user-bar-right">
+      <div class="sync-status">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span class="sync-label" id="sync-label">Synced</span>
+      </div>
+      <button class="signout-btn" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
 
   <header>
     <h1>🔥 30-Day Challenge</h1>
@@ -113,41 +205,23 @@
   </div>
 
   <div class="streak-bar">
-    <div class="streak-card">
-      <div class="val" id="current-streak">0</div>
-      <div class="lbl">🔥 Streak</div>
-    </div>
-    <div class="streak-card">
-      <div class="val" id="best-streak">0</div>
-      <div class="lbl">⭐ Best</div>
-    </div>
-    <div class="streak-card">
-      <div class="val" id="total-habits">0</div>
-      <div class="lbl">✅ Habits</div>
-    </div>
+    <div class="streak-card"><div class="val" id="current-streak">0</div><div class="lbl">🔥 Streak</div></div>
+    <div class="streak-card"><div class="val" id="best-streak">0</div><div class="lbl">⭐ Best</div></div>
+    <div class="streak-card"><div class="val" id="total-habits">0</div><div class="lbl">✅ Habits</div></div>
   </div>
 
   <div class="weight-section">
     <div class="weight-section-header">
       <div class="weight-section-title">⚖️ Weight Progress</div>
       <div class="unit-toggle">
-        <button class="unit-btn" id="btn-kg"    onclick="setUnit('kg')">kg</button>
+        <button class="unit-btn" id="btn-kg" onclick="setUnit('kg')">kg</button>
         <button class="unit-btn" id="btn-stlbs" onclick="setUnit('stlbs')">st &amp; lbs</button>
       </div>
     </div>
     <div class="weight-entries">
-      <div class="weight-entry">
-        <div class="we-label">Day 1</div>
-        <div class="we-val empty" id="w1">—</div>
-      </div>
-      <div class="weight-entry">
-        <div class="we-label">Day 15</div>
-        <div class="we-val empty" id="w15">—</div>
-      </div>
-      <div class="weight-entry">
-        <div class="we-label">Day 30</div>
-        <div class="we-val empty" id="w30">—</div>
-      </div>
+      <div class="weight-entry"><div class="we-label">Day 1</div><div class="we-val empty" id="w1">—</div></div>
+      <div class="weight-entry"><div class="we-label">Day 15</div><div class="we-val empty" id="w15">—</div></div>
+      <div class="weight-entry"><div class="we-label">Day 30</div><div class="we-val empty" id="w30">—</div></div>
     </div>
     <div class="weight-diff" id="weight-diff"></div>
   </div>
@@ -155,342 +229,397 @@
   <div class="habits-legend" id="habits-legend"></div>
   <div class="days-grid" id="days-grid"></div>
 
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="modal-title">Day 1</h2>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="today-badge" id="today-badge" style="display:none">TODAY</span>
-          <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-      </div>
-      <div id="weigh-in-container"></div>
-      <div id="habits-list"></div>
-      <div class="modal-footer">
-        <button class="save-btn" onclick="saveDay()">Save Day</button>
-        <div class="day-complete-badge" id="complete-badge">🎉 Perfect Day! All habits done!</div>
+</div>
+
+<!-- ── Day Modal ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Day 1</h2>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="today-badge" id="today-badge" style="display:none">TODAY</span>
+        <button class="close-btn" onclick="closeModal()">✕</button>
       </div>
     </div>
+    <div id="weigh-in-container"></div>
+    <div id="habits-list"></div>
+    <div class="modal-footer">
+      <button class="save-btn" onclick="saveDay()">Save Day</button>
+      <div class="day-complete-badge" id="complete-badge">🎉 Perfect Day! All habits done!</div>
+    </div>
   </div>
+</div>
 
-  <script>
-    const HABITS = [
-      { id: 'sleep',    icon: '😴', name: 'Sleep',       target: '7 hours',           color: '#a78bfa' },
-      { id: 'workout',  icon: '💪', name: 'Workout',      target: '45 minutes',        color: '#f87171' },
-      { id: 'calories', icon: '🥗', name: 'Calorie Goal', target: '1000 calories max', color: '#4ade80' },
-      { id: 'water',    icon: '💧', name: 'Water',        target: '2 litres',          color: '#38bdf8' },
-      { id: 'steps',    icon: '👟', name: 'Steps',        target: 'Min 5,000 steps',   color: '#60a5fa' },
-    ];
+<script>
+  // ══════════════════════════════════════════════════════
+  // 🔥 YOUR FIREBASE CONFIGURATION
+  // ══════════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBVGvemhPeu-aQWoVl9iaICMJPNetdUh6g",
+    authDomain:        "day-challenge-15b20.firebaseapp.com",
+    projectId:         "day-challenge-15b20",
+    storageBucket:     "day-challenge-15b20.firebasestorage.app",
+    messagingSenderId: "443669905654",
+    appId:             "1:443669905654:web:3ed57eca98db82d8ec6cd7"
+  };
+  // ══════════════════════════════════════════════════════
 
-    const WEIGH_IN_DAYS = [1, 15, 30];
-    const TOTAL_DAYS = 30;
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
 
-    let data        = {};
-    let currentDay  = null;
-    let tempChecks  = {};
-    let tempWeightKg = null;   // single source of truth, always kg
-    let tempSt      = '';
-    let tempLbs     = '';
-    let weightUnit  = 'kg';    // 'kg' | 'stlbs'
+  // ── Constants ─────────────────────────────────────────
+  const HABITS = [
+    { id: 'sleep',    icon: '😴', name: 'Sleep',       target: '7 hours',           color: '#a78bfa' },
+    { id: 'workout',  icon: '💪', name: 'Workout',      target: '45 minutes',        color: '#f87171' },
+    { id: 'calories', icon: '🥗', name: 'Calorie Goal', target: '1000 calories max', color: '#4ade80' },
+    { id: 'water',    icon: '💧', name: 'Water',        target: '2 litres',          color: '#38bdf8' },
+    { id: 'steps',    icon: '👟', name: 'Steps',        target: 'Min 5,000 steps',   color: '#60a5fa' },
+  ];
+  const WEIGH_IN_DAYS = [1, 15, 30];
+  const TOTAL_DAYS    = 30;
 
-    // ── Persistence ───────────────────────────────────────
-    try { const s = localStorage.getItem('30day_challenge_v2'); if (s) data = JSON.parse(s); } catch(e) {}
-    try { const u = localStorage.getItem('30day_weight_unit'); if (u === 'kg' || u === 'stlbs') weightUnit = u; } catch(e) {}
+  // ── State ──────────────────────────────────────────────
+  let data          = {};
+  let currentDay    = null;
+  let tempChecks    = {};
+  let tempWeightKg  = null;
+  let tempSt        = '';
+  let tempLbs       = '';
+  let weightUnit    = 'kg';
+  let currentUser   = null;
+  let unsubListener = null;
 
-    function saveData() {
-      try { localStorage.setItem('30day_challenge_v2', JSON.stringify(data)); } catch(e) {}
+  // ── Screen helpers ─────────────────────────────────────
+  function showScreen(name) {
+    document.getElementById('loading-screen').style.display = name === 'loading' ? 'flex'  : 'none';
+    document.getElementById('login-screen').style.display   = name === 'login'   ? 'flex'  : 'none';
+    document.getElementById('main-app').style.display       = name === 'app'     ? 'block' : 'none';
+  }
+  showScreen('loading');
+
+  // ── Auth ───────────────────────────────────────────────
+  function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(err => alert('Sign-in failed: ' + err.message));
+  }
+
+  function doSignOut() {
+    if (unsubListener) { unsubListener(); unsubListener = null; }
+    data = {}; currentUser = null;
+    auth.signOut();
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('user-name').textContent = user.displayName || user.email || 'User';
+      document.getElementById('user-avatar').src       = user.photoURL || '';
+      showScreen('app');
+      startSync(user.uid);
+    } else {
+      if (unsubListener) { unsubListener(); unsubListener = null; }
+      showScreen('login');
     }
+  });
 
-    // ── Conversion helpers ────────────────────────────────
-    function kgToStLbs(kg) {
-      const totalLbs = kg / 0.453592;
-      const st  = Math.floor(totalLbs / 14);
-      const lbs = Math.round((totalLbs % 14) * 10) / 10;
-      return { st, lbs };
+  // ── Firestore real-time sync ───────────────────────────
+  function startSync(uid) {
+    setSyncState('syncing');
+    if (unsubListener) unsubListener();
+    unsubListener = db.collection('users').doc(uid).onSnapshot(
+      doc => {
+        if (doc.exists) {
+          const saved = doc.data();
+          data       = saved.days       || {};
+          weightUnit = saved.weightUnit || 'kg';
+        }
+        refreshUnitButtons();
+        buildLegend();
+        buildGrid();
+        updateStats();
+        setSyncState('synced');
+      },
+      err => { console.error(err); setSyncState('error'); }
+    );
+  }
+
+  async function saveToCloud() {
+    if (!currentUser) return;
+    setSyncState('syncing');
+    try {
+      await db.collection('users').doc(currentUser.uid).set({
+        days:       data,
+        weightUnit: weightUnit,
+        updatedAt:  firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (err) {
+      console.error(err);
+      setSyncState('error');
     }
+  }
 
-    function stLbsToKg(st, lbs) {
-      const total = (parseFloat(st) || 0) * 14 + (parseFloat(lbs) || 0);
-      return total * 0.453592;
+  function setSyncState(state) {
+    const dot = document.getElementById('sync-dot');
+    const lbl = document.getElementById('sync-label');
+    if (!dot || !lbl) return;
+    dot.className   = 'sync-dot' + (state === 'syncing' ? ' syncing' : state === 'error' ? ' error' : '');
+    lbl.textContent = state === 'syncing' ? 'Saving…' : state === 'error' ? 'Error!' : 'Synced';
+  }
+
+  // ── Conversion helpers ─────────────────────────────────
+  function kgToStLbs(kg) {
+    const totalLbs = kg / 0.453592;
+    const st  = Math.floor(totalLbs / 14);
+    const lbs = Math.round((totalLbs % 14) * 10) / 10;
+    return { st, lbs };
+  }
+  function stLbsToKg(st, lbs) {
+    return ((parseFloat(st) || 0) * 14 + (parseFloat(lbs) || 0)) * 0.453592;
+  }
+  function formatWeight(kg) {
+    if (!kg) return null;
+    if (weightUnit === 'kg') return kg.toFixed(1) + ' kg';
+    const { st, lbs } = kgToStLbs(kg);
+    return `${st}st ${lbs.toFixed(1)}lb`;
+  }
+  function formatDiff(diffKg) {
+    const abs = Math.abs(diffKg);
+    if (weightUnit === 'kg') return abs.toFixed(1) + ' kg';
+    const totalLbs = abs / 0.453592;
+    const st  = Math.floor(totalLbs / 14);
+    const lbs = Math.round((totalLbs % 14) * 10) / 10;
+    return st > 0 ? `${st}st ${lbs.toFixed(1)}lb` : `${lbs.toFixed(1)}lb`;
+  }
+
+  // ── Unit switching ─────────────────────────────────────
+  function setUnit(newUnit) {
+    if (currentDay && WEIGH_IN_DAYS.includes(currentDay)) syncWeightFromDOM();
+    weightUnit = newUnit;
+    if (newUnit === 'stlbs' && tempWeightKg) {
+      const { st, lbs } = kgToStLbs(tempWeightKg);
+      tempSt = st.toString(); tempLbs = lbs.toFixed(1);
     }
-
-    function formatWeight(kg) {
-      if (!kg) return null;
-      if (weightUnit === 'kg') return kg.toFixed(1) + ' kg';
-      const { st, lbs } = kgToStLbs(kg);
-      return `${st}st ${lbs.toFixed(1)}lb`;
-    }
-
-    function formatDiff(diffKg) {
-      const abs = Math.abs(diffKg);
-      if (weightUnit === 'kg') return abs.toFixed(1) + ' kg';
-      const totalLbs = abs / 0.453592;
-      const st  = Math.floor(totalLbs / 14);
-      const lbs = Math.round((totalLbs % 14) * 10) / 10;
-      return st > 0 ? `${st}st ${lbs.toFixed(1)}lb` : `${lbs.toFixed(1)}lb`;
-    }
-
-    // ── Unit switching ────────────────────────────────────
-    function setUnit(newUnit) {
-      // Capture whatever is currently in the modal DOM before switching
-      if (currentDay && WEIGH_IN_DAYS.includes(currentDay)) syncWeightFromDOM();
-
-      weightUnit = newUnit;
-      try { localStorage.setItem('30day_weight_unit', newUnit); } catch(e) {}
-
-      // Pre-fill stones/lbs from kg if switching to stlbs
-      if (newUnit === 'stlbs' && tempWeightKg) {
-        const { st, lbs } = kgToStLbs(tempWeightKg);
-        tempSt  = st.toString();
-        tempLbs = lbs.toFixed(1);
-      }
-
-      refreshUnitButtons();
-      updateWeightDisplay();
-      if (currentDay && WEIGH_IN_DAYS.includes(currentDay)) renderWeighIn(currentDay);
-    }
-
-    function syncWeightFromDOM() {
-      if (weightUnit === 'kg') {
-        const el = document.getElementById('weight-input-kg');
-        if (el) tempWeightKg = el.value ? parseFloat(el.value) : null;
-      } else {
-        const stEl  = document.getElementById('weight-input-st');
-        const lbsEl = document.getElementById('weight-input-lbs');
-        if (stEl)  tempSt  = stEl.value;
-        if (lbsEl) tempLbs = lbsEl.value;
-        const kg = stLbsToKg(tempSt, tempLbs);
-        tempWeightKg = kg > 0 ? kg : null;
-      }
-    }
-
-    function updateTempWeightFromStLbs() {
+    refreshUnitButtons();
+    updateWeightDisplay();
+    if (currentDay && WEIGH_IN_DAYS.includes(currentDay)) renderWeighIn(currentDay);
+  }
+  function syncWeightFromDOM() {
+    if (weightUnit === 'kg') {
+      const el = document.getElementById('weight-input-kg');
+      if (el) tempWeightKg = el.value ? parseFloat(el.value) : null;
+    } else {
+      const stEl  = document.getElementById('weight-input-st');
+      const lbsEl = document.getElementById('weight-input-lbs');
+      if (stEl)  tempSt  = stEl.value;
+      if (lbsEl) tempLbs = lbsEl.value;
       const kg = stLbsToKg(tempSt, tempLbs);
       tempWeightKg = kg > 0 ? kg : null;
     }
+  }
+  function updateTempWeightFromStLbs() {
+    const kg = stLbsToKg(tempSt, tempLbs);
+    tempWeightKg = kg > 0 ? kg : null;
+  }
+  function refreshUnitButtons() {
+    const kg    = document.getElementById('btn-kg');
+    const stlbs = document.getElementById('btn-stlbs');
+    if (kg)    kg.classList.toggle('active', weightUnit === 'kg');
+    if (stlbs) stlbs.classList.toggle('active', weightUnit === 'stlbs');
+  }
 
-    function refreshUnitButtons() {
-      document.getElementById('btn-kg').classList.toggle('active', weightUnit === 'kg');
-      document.getElementById('btn-stlbs').classList.toggle('active', weightUnit === 'stlbs');
+  // ── Grid & stats ───────────────────────────────────────
+  function getDayScore(d) {
+    const day = data[d]; if (!day) return 0;
+    return HABITS.filter(h => day[h.id]).length;
+  }
+  function isDayComplete(d) { return getDayScore(d) === HABITS.length; }
+
+  function buildLegend() {
+    document.getElementById('habits-legend').innerHTML = HABITS.map(h => `
+      <div class="habit-badge">
+        <div class="dot" style="background:${h.color}"></div>${h.icon} ${h.name}
+      </div>`).join('');
+  }
+
+  function buildGrid() {
+    const grid = document.getElementById('days-grid');
+    grid.innerHTML = '';
+    for (let d = 1; d <= TOTAL_DAYS; d++) {
+      const score = getDayScore(d), complete = isDayComplete(d);
+      const isWDay = WEIGH_IN_DAYS.includes(d), hasWeight = data[d] && data[d].weight;
+      const card = document.createElement('div');
+      card.className = 'day-card' + (complete ? ' completed' : '') + (score > 0 ? ' has-progress' : '');
+      card.innerHTML = `
+        <div class="day-score">${score}/${HABITS.length}</div>
+        <div class="day-label">Day</div>
+        <div class="day-num">${d}</div>
+        <div class="mini-habits">
+          ${HABITS.map(h => `<div class="mini-dot ${data[d] && data[d][h.id] ? 'done' : ''}" style="background:${h.color}"></div>`).join('')}
+        </div>
+        ${isWDay ? `<div class="scale-icon">${hasWeight ? '⚖️' : '🔘'}</div>` : ''}`;
+      card.onclick = () => openModal(d);
+      grid.appendChild(card);
     }
+  }
 
-    // ── Grid & stats ──────────────────────────────────────
-    function getDayScore(d) {
-      const day = data[d]; if (!day) return 0;
-      return HABITS.filter(h => day[h.id]).length;
+  function updateStats() {
+    let completed = 0, totalDone = 0, best = 0, streak = 0;
+    for (let d = 1; d <= TOTAL_DAYS; d++) {
+      totalDone += getDayScore(d);
+      if (isDayComplete(d)) { completed++; streak++; best = Math.max(best, streak); } else streak = 0;
     }
-    function isDayComplete(d) { return getDayScore(d) === HABITS.length; }
+    let cur = 0;
+    for (let d = TOTAL_DAYS; d >= 1; d--) { if (isDayComplete(d)) cur++; else break; }
+    document.getElementById('days-done').textContent      = completed;
+    document.getElementById('days-left').textContent      = TOTAL_DAYS - completed;
+    document.getElementById('overall-bar').style.width    = ((completed / TOTAL_DAYS) * 100) + '%';
+    document.getElementById('current-streak').textContent = cur;
+    document.getElementById('best-streak').textContent    = best;
+    document.getElementById('total-habits').textContent   = totalDone;
+    updateWeightDisplay();
+  }
 
-    function buildLegend() {
-      document.getElementById('habits-legend').innerHTML = HABITS.map(h => `
-        <div class="habit-badge">
-          <div class="dot" style="background:${h.color}"></div>
-          ${h.icon} ${h.name}
-        </div>`).join('');
+  function updateWeightDisplay() {
+    const w1  = data[1]  && data[1].weight  ? data[1].weight  : null;
+    const w15 = data[15] && data[15].weight ? data[15].weight : null;
+    const w30 = data[30] && data[30].weight ? data[30].weight : null;
+    const set = (id, kg) => {
+      const el = document.getElementById(id); if (!el) return;
+      el.textContent = formatWeight(kg) || '—';
+      el.className   = 'we-val' + (kg ? '' : ' empty');
+    };
+    set('w1', w1); set('w15', w15); set('w30', w30);
+    refreshUnitButtons();
+    const diffEl = document.getElementById('weight-diff'); if (!diffEl) return;
+    const base = w1, latest = w30 || w15;
+    if (base && latest) {
+      const diff = latest - base, label = w30 ? 'overall' : 'at halfway';
+      if (diff < 0)      diffEl.innerHTML = `<span class="loss">▼ ${formatDiff(diff)} lost ${label} 🎉</span>`;
+      else if (diff > 0) diffEl.innerHTML = `<span class="gain">▲ ${formatDiff(diff)} gained ${label}</span>`;
+      else               diffEl.innerHTML = `<span class="neutral">No change in weight ${label}</span>`;
+    } else diffEl.innerHTML = '';
+  }
+
+  // ── Modal ──────────────────────────────────────────────
+  function openModal(dayNum) {
+    currentDay   = dayNum;
+    tempChecks   = Object.assign({}, data[dayNum] || {});
+    tempWeightKg = data[dayNum] && data[dayNum].weight ? data[dayNum].weight : null;
+    if (weightUnit === 'stlbs' && tempWeightKg) {
+      const { st, lbs } = kgToStLbs(tempWeightKg);
+      tempSt = st.toString(); tempLbs = lbs.toFixed(1);
+    } else { tempSt = ''; tempLbs = ''; }
+    document.getElementById('modal-title').textContent   = 'Day ' + dayNum;
+    document.getElementById('today-badge').style.display = 'none';
+    renderWeighIn(dayNum);
+    renderHabitsList();
+    updateCompleteBadge();
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function renderWeighIn(dayNum) {
+    const container = document.getElementById('weigh-in-container');
+    if (!WEIGH_IN_DAYS.includes(dayNum)) { container.innerHTML = ''; return; }
+    let prevHint = '';
+    if (dayNum === 15 && data[1] && data[1].weight) {
+      prevHint = `<div class="weigh-in-prev">Day 1: <span>${formatWeight(data[1].weight)}</span></div>`;
+    } else if (dayNum === 30) {
+      const parts = [];
+      if (data[1]  && data[1].weight)  parts.push(`Day 1: <span>${formatWeight(data[1].weight)}</span>`);
+      if (data[15] && data[15].weight) parts.push(`Day 15: <span>${formatWeight(data[15].weight)}</span>`);
+      if (parts.length) prevHint = `<div class="weigh-in-prev">${parts.join(' &nbsp;·&nbsp; ')}</div>`;
     }
-
-    function buildGrid() {
-      const grid = document.getElementById('days-grid');
-      grid.innerHTML = '';
-      for (let d = 1; d <= TOTAL_DAYS; d++) {
-        const score     = getDayScore(d);
-        const complete  = isDayComplete(d);
-        const isWDay    = WEIGH_IN_DAYS.includes(d);
-        const hasWeight = data[d] && data[d].weight;
-        const card = document.createElement('div');
-        card.className = 'day-card' + (complete ? ' completed' : '') + (score > 0 ? ' has-progress' : '');
-        card.innerHTML = `
-          <div class="day-score">${score}/${HABITS.length}</div>
-          <div class="day-label">Day</div>
-          <div class="day-num">${d}</div>
-          <div class="mini-habits">
-            ${HABITS.map(h => `<div class="mini-dot ${data[d] && data[d][h.id] ? 'done' : ''}" style="background:${h.color}" title="${h.name}"></div>`).join('')}
+    let inputHTML = '';
+    if (weightUnit === 'kg') {
+      const val = tempWeightKg ? tempWeightKg.toFixed(1) : '';
+      inputHTML = `
+        <div class="weigh-in-row">
+          <input class="weigh-in-input" type="number" step="0.1" min="0" placeholder="Enter weight"
+            value="${val}" id="weight-input-kg"
+            oninput="tempWeightKg = this.value ? parseFloat(this.value) : null"/>
+          <span class="weigh-in-unit">kg</span>
+        </div>`;
+    } else {
+      const stVal  = tempSt  !== '' ? tempSt  : (tempWeightKg ? kgToStLbs(tempWeightKg).st : '');
+      const lbsVal = tempLbs !== '' ? tempLbs : (tempWeightKg ? kgToStLbs(tempWeightKg).lbs.toFixed(1) : '');
+      inputHTML = `
+        <div class="stlbs-row">
+          <div class="stlbs-group">
+            <input class="stlbs-input" type="number" min="0" step="1" placeholder="0"
+              value="${stVal}" id="weight-input-st"
+              oninput="tempSt=this.value; updateTempWeightFromStLbs()"/>
+            <span class="stlbs-unit">st</span>
           </div>
-          ${isWDay ? `<div class="scale-icon" title="Weigh-in day">${hasWeight ? '⚖️' : '🔘'}</div>` : ''}`;
-        card.onclick = () => openModal(d);
-        grid.appendChild(card);
-      }
-    }
-
-    function updateStats() {
-      let completed = 0, totalDone = 0, best = 0, streak = 0;
-      for (let d = 1; d <= TOTAL_DAYS; d++) {
-        totalDone += getDayScore(d);
-        if (isDayComplete(d)) { completed++; streak++; best = Math.max(best, streak); }
-        else streak = 0;
-      }
-      let cur = 0;
-      for (let d = TOTAL_DAYS; d >= 1; d--) { if (isDayComplete(d)) cur++; else break; }
-
-      document.getElementById('days-done').textContent     = completed;
-      document.getElementById('days-left').textContent     = TOTAL_DAYS - completed;
-      document.getElementById('overall-bar').style.width   = ((completed / TOTAL_DAYS) * 100) + '%';
-      document.getElementById('current-streak').textContent = cur;
-      document.getElementById('best-streak').textContent   = best;
-      document.getElementById('total-habits').textContent  = totalDone;
-      updateWeightDisplay();
-    }
-
-    function updateWeightDisplay() {
-      const w1  = data[1]  && data[1].weight  ? data[1].weight  : null;
-      const w15 = data[15] && data[15].weight ? data[15].weight : null;
-      const w30 = data[30] && data[30].weight ? data[30].weight : null;
-
-      const set = (id, kg) => {
-        const el = document.getElementById(id);
-        el.textContent = formatWeight(kg) || '—';
-        el.className   = 'we-val' + (kg ? '' : ' empty');
-      };
-      set('w1', w1); set('w15', w15); set('w30', w30);
-      refreshUnitButtons();
-
-      const diffEl = document.getElementById('weight-diff');
-      const base   = w1;
-      const latest = w30 || w15;
-      if (base && latest) {
-        const diff  = latest - base;
-        const label = w30 ? 'overall' : 'at halfway';
-        if (diff < 0) diffEl.innerHTML = `<span class="loss">▼ ${formatDiff(diff)} lost ${label} 🎉</span>`;
-        else if (diff > 0) diffEl.innerHTML = `<span class="gain">▲ ${formatDiff(diff)} gained ${label}</span>`;
-        else diffEl.innerHTML = `<span class="neutral">No change in weight ${label}</span>`;
-      } else {
-        diffEl.innerHTML = '';
-      }
-    }
-
-    // ── Modal ─────────────────────────────────────────────
-    function openModal(dayNum) {
-      currentDay   = dayNum;
-      tempChecks   = Object.assign({}, data[dayNum] || {});
-      tempWeightKg = data[dayNum] && data[dayNum].weight ? data[dayNum].weight : null;
-
-      if (weightUnit === 'stlbs' && tempWeightKg) {
-        const { st, lbs } = kgToStLbs(tempWeightKg);
-        tempSt = st.toString(); tempLbs = lbs.toFixed(1);
-      } else {
-        tempSt = ''; tempLbs = '';
-      }
-
-      document.getElementById('modal-title').textContent   = 'Day ' + dayNum;
-      document.getElementById('today-badge').style.display = 'none';
-      renderWeighIn(dayNum);
-      renderHabitsList();
-      updateCompleteBadge();
-      document.getElementById('modal-overlay').classList.add('open');
-    }
-
-    function renderWeighIn(dayNum) {
-      const container = document.getElementById('weigh-in-container');
-      if (!WEIGH_IN_DAYS.includes(dayNum)) { container.innerHTML = ''; return; }
-
-      // Previous weight hint
-      let prevHint = '';
-      if (dayNum === 15 && data[1] && data[1].weight) {
-        prevHint = `<div class="weigh-in-prev">Day 1: <span>${formatWeight(data[1].weight)}</span></div>`;
-      } else if (dayNum === 30) {
-        const parts = [];
-        if (data[1]  && data[1].weight)  parts.push(`Day 1: <span>${formatWeight(data[1].weight)}</span>`);
-        if (data[15] && data[15].weight) parts.push(`Day 15: <span>${formatWeight(data[15].weight)}</span>`);
-        if (parts.length) prevHint = `<div class="weigh-in-prev">${parts.join(' &nbsp;·&nbsp; ')}</div>`;
-      }
-
-      let inputHTML = '';
-      if (weightUnit === 'kg') {
-        const val = tempWeightKg ? tempWeightKg.toFixed(1) : '';
-        inputHTML = `
-          <div class="weigh-in-row">
-            <input class="weigh-in-input" type="number" step="0.1" min="0" placeholder="Enter weight"
-              value="${val}" id="weight-input-kg"
-              oninput="tempWeightKg = this.value ? parseFloat(this.value) : null" />
-            <span class="weigh-in-unit">kg</span>
-          </div>`;
-      } else {
-        const stVal  = tempSt  !== '' ? tempSt  : (tempWeightKg ? kgToStLbs(tempWeightKg).st : '');
-        const lbsVal = tempLbs !== '' ? tempLbs : (tempWeightKg ? kgToStLbs(tempWeightKg).lbs.toFixed(1) : '');
-        inputHTML = `
-          <div class="stlbs-row">
-            <div class="stlbs-group">
-              <input class="stlbs-input" type="number" min="0" step="1" placeholder="0"
-                value="${stVal}" id="weight-input-st"
-                oninput="tempSt = this.value; updateTempWeightFromStLbs()" />
-              <span class="stlbs-unit">st</span>
-            </div>
-            <div class="stlbs-group">
-              <input class="stlbs-input" type="number" min="0" max="13.9" step="0.1" placeholder="0.0"
-                value="${lbsVal}" id="weight-input-lbs"
-                oninput="tempLbs = this.value; updateTempWeightFromStLbs()" />
-              <span class="stlbs-unit">lbs</span>
-            </div>
-          </div>`;
-      }
-
-      container.innerHTML = `
-        <div class="weigh-in-box">
-          <div class="weigh-in-box-header">
-            <div class="weigh-in-box-title">⚖️ Weigh-In — Day ${dayNum}</div>
-            <div class="modal-unit-toggle">
-              <button class="modal-unit-btn ${weightUnit === 'kg'     ? 'active' : ''}" onclick="setUnit('kg')">kg</button>
-              <button class="modal-unit-btn ${weightUnit === 'stlbs'  ? 'active' : ''}" onclick="setUnit('stlbs')">st &amp; lbs</button>
-            </div>
+          <div class="stlbs-group">
+            <input class="stlbs-input" type="number" min="0" max="13.9" step="0.1" placeholder="0.0"
+              value="${lbsVal}" id="weight-input-lbs"
+              oninput="tempLbs=this.value; updateTempWeightFromStLbs()"/>
+            <span class="stlbs-unit">lbs</span>
           </div>
-          ${inputHTML}
-          ${prevHint}
         </div>`;
     }
-
-    function renderHabitsList() {
-      document.getElementById('habits-list').innerHTML = HABITS.map(h => `
-        <div class="habit-item" onclick="toggleHabit('${h.id}')">
-          <div class="habit-icon">${h.icon}</div>
-          <div class="habit-info">
-            <div class="habit-name">${h.name}</div>
-            <div class="habit-target">${h.target}</div>
+    container.innerHTML = `
+      <div class="weigh-in-box">
+        <div class="weigh-in-box-header">
+          <div class="weigh-in-box-title">⚖️ Weigh-In — Day ${dayNum}</div>
+          <div class="modal-unit-toggle">
+            <button class="modal-unit-btn ${weightUnit==='kg'?'active':''}" onclick="setUnit('kg')">kg</button>
+            <button class="modal-unit-btn ${weightUnit==='stlbs'?'active':''}" onclick="setUnit('stlbs')">st &amp; lbs</button>
           </div>
-          <div class="habit-check ${tempChecks[h.id] ? 'checked' : ''}" id="check-${h.id}">
-            ${tempChecks[h.id] ? '✓' : ''}
-          </div>
-        </div>`).join('');
+        </div>
+        ${inputHTML}
+        ${prevHint}
+      </div>`;
+  }
+
+  function renderHabitsList() {
+    document.getElementById('habits-list').innerHTML = HABITS.map(h => `
+      <div class="habit-item" onclick="toggleHabit('${h.id}')">
+        <div class="habit-icon">${h.icon}</div>
+        <div class="habit-info">
+          <div class="habit-name">${h.name}</div>
+          <div class="habit-target">${h.target}</div>
+        </div>
+        <div class="habit-check ${tempChecks[h.id] ? 'checked' : ''}" id="check-${h.id}">
+          ${tempChecks[h.id] ? '✓' : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  function toggleHabit(id) {
+    tempChecks[id] = !tempChecks[id];
+    const el = document.getElementById('check-' + id);
+    el.classList.toggle('checked', !!tempChecks[id]);
+    el.textContent = tempChecks[id] ? '✓' : '';
+    updateCompleteBadge();
+  }
+
+  function updateCompleteBadge() {
+    document.getElementById('complete-badge').classList.toggle('show', HABITS.every(h => tempChecks[h.id]));
+  }
+
+  function saveDay() {
+    if (WEIGH_IN_DAYS.includes(currentDay)) syncWeightFromDOM();
+    data[currentDay] = { ...tempChecks };
+    if (WEIGH_IN_DAYS.includes(currentDay)) {
+      if (tempWeightKg && tempWeightKg > 0) data[currentDay].weight = parseFloat(tempWeightKg.toFixed(3));
+      else delete data[currentDay].weight;
     }
-
-    function toggleHabit(id) {
-      tempChecks[id] = !tempChecks[id];
-      const el = document.getElementById('check-' + id);
-      el.classList.toggle('checked', tempChecks[id]);
-      el.textContent = tempChecks[id] ? '✓' : '';
-      updateCompleteBadge();
-    }
-
-    function updateCompleteBadge() {
-      document.getElementById('complete-badge').classList.toggle('show', HABITS.every(h => tempChecks[h.id]));
-    }
-
-    function saveDay() {
-      if (WEIGH_IN_DAYS.includes(currentDay)) syncWeightFromDOM();
-      data[currentDay] = { ...tempChecks };
-      if (WEIGH_IN_DAYS.includes(currentDay)) {
-        if (tempWeightKg && tempWeightKg > 0) data[currentDay].weight = parseFloat(tempWeightKg.toFixed(3));
-        else delete data[currentDay].weight;
-      }
-      saveData();
-      buildGrid();
-      updateStats();
-      closeModal();
-    }
-
-    function closeModal() {
-      document.getElementById('modal-overlay').classList.remove('open');
-      currentDay = null;
-    }
-
-    document.getElementById('modal-overlay').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-
-    // ── Init ──────────────────────────────────────────────
-    refreshUnitButtons();
-    buildLegend();
+    saveToCloud();
     buildGrid();
     updateStats();
-  </script>
+    closeModal();
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    currentDay = null;
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
 </body>
 </html>
