@@ -56,23 +56,40 @@
     .streak-card { flex: 1; background: #1a1a2e; border: 1px solid #ffffff10; border-radius: 14px; padding: 14px; text-align: center; }
     .streak-card .val { font-size: 1.6rem; font-weight: 800; color: #ffd200; }
     .streak-card .lbl { font-size: 0.72rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+    /* Weight Section */
     .weight-section { background: #1a1a2e; margin: 0 16px 20px; border-radius: 16px; padding: 20px; border: 1px solid #a78bfa30; }
-    .weight-section h2 { font-size: 0.85rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .weight-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .weight-section-title { font-size: 0.85rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .unit-toggle { display: flex; border-radius: 999px; overflow: hidden; border: 1.5px solid #a78bfa50; }
+    .unit-btn { background: transparent; border: none; color: #888; font-size: 0.72rem; font-weight: 600; padding: 5px 11px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .unit-btn.active { background: #a78bfa; color: #000; }
     .weight-entries { display: flex; gap: 10px; }
-    .weight-entry { flex: 1; background: #0f0f1a; border-radius: 12px; padding: 12px; text-align: center; }
+    .weight-entry { flex: 1; background: #0f0f1a; border-radius: 12px; padding: 12px 8px; text-align: center; min-width: 0; }
     .weight-entry .we-label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 6px; }
-    .weight-entry .we-val { font-size: 1.2rem; font-weight: 800; color: #a78bfa; }
-    .weight-entry .we-val.empty { color: #333; font-size: 0.9rem; font-weight: 400; }
+    .weight-entry .we-val { font-size: clamp(0.78rem, 2.4vw, 1.1rem); font-weight: 800; color: #a78bfa; word-break: break-word; line-height: 1.3; }
+    .weight-entry .we-val.empty { color: #333; font-weight: 400; }
     .weight-diff { text-align: center; margin-top: 12px; font-size: 0.85rem; font-weight: 600; }
     .weight-diff .loss { color: #4ade80; }
     .weight-diff .gain { color: #f87171; }
     .weight-diff .neutral { color: #888; }
+
+    /* Weigh-in modal */
     .weigh-in-box { background: #0f0f1a; border-radius: 14px; padding: 16px; margin-bottom: 16px; border: 1px solid #a78bfa50; }
-    .weigh-in-box h3 { font-size: 0.8rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .weigh-in-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .weigh-in-box-title { font-size: 0.8rem; color: #a78bfa; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .modal-unit-toggle { display: flex; border-radius: 999px; overflow: hidden; border: 1.5px solid #a78bfa50; }
+    .modal-unit-btn { background: transparent; border: none; color: #888; font-size: 0.7rem; font-weight: 600; padding: 4px 9px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .modal-unit-btn.active { background: #a78bfa; color: #000; }
     .weigh-in-row { display: flex; align-items: center; gap: 10px; }
-    .weigh-in-input { background: #1a1a2e; border: 1.5px solid #a78bfa50; border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 1.1rem; font-weight: 700; flex: 1; outline: none; transition: border-color 0.2s; }
+    .weigh-in-input { background: #1a1a2e; border: 1.5px solid #a78bfa50; border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 1.1rem; font-weight: 700; flex: 1; outline: none; transition: border-color 0.2s; width: 100%; }
     .weigh-in-input:focus { border-color: #a78bfa; }
-    .weigh-in-unit { color: #888; font-size: 0.9rem; }
+    .weigh-in-unit { color: #888; font-size: 0.9rem; white-space: nowrap; }
+    .stlbs-row { display: flex; align-items: center; gap: 10px; }
+    .stlbs-group { display: flex; align-items: center; gap: 6px; flex: 1; }
+    .stlbs-input { background: #1a1a2e; border: 1.5px solid #a78bfa50; border-radius: 10px; padding: 10px 10px; color: #fff; font-size: 1.1rem; font-weight: 700; width: 100%; outline: none; transition: border-color 0.2s; }
+    .stlbs-input:focus { border-color: #a78bfa; }
+    .stlbs-unit { color: #888; font-size: 0.9rem; white-space: nowrap; }
     .weigh-in-prev { margin-top: 10px; font-size: 0.78rem; color: #666; }
     .weigh-in-prev span { color: #a78bfa; font-weight: 600; }
   </style>
@@ -87,7 +104,7 @@
   <div class="overall-progress">
     <h2>Overall Progress</h2>
     <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="overall-bar" style="width: 0%"></div>
+      <div class="progress-bar-fill" id="overall-bar" style="width:0%"></div>
     </div>
     <div class="progress-stats">
       <span><b id="days-done">0</b> days completed</span>
@@ -111,7 +128,13 @@
   </div>
 
   <div class="weight-section">
-    <h2>⚖️ Weight Progress</h2>
+    <div class="weight-section-header">
+      <div class="weight-section-title">⚖️ Weight Progress</div>
+      <div class="unit-toggle">
+        <button class="unit-btn" id="btn-kg"    onclick="setUnit('kg')">kg</button>
+        <button class="unit-btn" id="btn-stlbs" onclick="setUnit('stlbs')">st &amp; lbs</button>
+      </div>
+    </div>
     <div class="weight-entries">
       <div class="weight-entry">
         <div class="we-label">Day 1</div>
@@ -152,55 +175,127 @@
 
   <script>
     const HABITS = [
-      { id: 'sleep',    icon: '😴', name: 'Sleep',        target: '7 hours',           color: '#a78bfa' },
-      { id: 'workout',  icon: '💪', name: 'Workout',       target: '45 minutes',        color: '#f87171' },
-      { id: 'calories', icon: '🥗', name: 'Calorie Goal',  target: '1000 calories max', color: '#4ade80' },
-      { id: 'water',    icon: '💧', name: 'Water',         target: '2 litres',          color: '#38bdf8' },
-      { id: 'steps',    icon: '👟', name: 'Steps',         target: 'Min 5,000 steps',   color: '#60a5fa' },
+      { id: 'sleep',    icon: '😴', name: 'Sleep',       target: '7 hours',           color: '#a78bfa' },
+      { id: 'workout',  icon: '💪', name: 'Workout',      target: '45 minutes',        color: '#f87171' },
+      { id: 'calories', icon: '🥗', name: 'Calorie Goal', target: '1000 calories max', color: '#4ade80' },
+      { id: 'water',    icon: '💧', name: 'Water',        target: '2 litres',          color: '#38bdf8' },
+      { id: 'steps',    icon: '👟', name: 'Steps',        target: 'Min 5,000 steps',   color: '#60a5fa' },
     ];
 
     const WEIGH_IN_DAYS = [1, 15, 30];
     const TOTAL_DAYS = 30;
-    let data = {};
-    let currentDay = null;
-    let tempChecks = {};
-    let tempWeight = '';
 
-    try {
-      const saved = localStorage.getItem('30day_challenge_v2');
-      if (saved) data = JSON.parse(saved);
-    } catch(e) {}
+    let data        = {};
+    let currentDay  = null;
+    let tempChecks  = {};
+    let tempWeightKg = null;   // single source of truth, always kg
+    let tempSt      = '';
+    let tempLbs     = '';
+    let weightUnit  = 'kg';    // 'kg' | 'stlbs'
 
-    function save() {
+    // ── Persistence ───────────────────────────────────────
+    try { const s = localStorage.getItem('30day_challenge_v2'); if (s) data = JSON.parse(s); } catch(e) {}
+    try { const u = localStorage.getItem('30day_weight_unit'); if (u === 'kg' || u === 'stlbs') weightUnit = u; } catch(e) {}
+
+    function saveData() {
       try { localStorage.setItem('30day_challenge_v2', JSON.stringify(data)); } catch(e) {}
     }
 
-    function getDayScore(dayNum) {
-      const d = data[dayNum];
-      if (!d) return 0;
-      return HABITS.filter(h => d[h.id]).length;
+    // ── Conversion helpers ────────────────────────────────
+    function kgToStLbs(kg) {
+      const totalLbs = kg / 0.453592;
+      const st  = Math.floor(totalLbs / 14);
+      const lbs = Math.round((totalLbs % 14) * 10) / 10;
+      return { st, lbs };
     }
 
-    function isDayComplete(dayNum) {
-      return getDayScore(dayNum) === HABITS.length;
+    function stLbsToKg(st, lbs) {
+      const total = (parseFloat(st) || 0) * 14 + (parseFloat(lbs) || 0);
+      return total * 0.453592;
     }
+
+    function formatWeight(kg) {
+      if (!kg) return null;
+      if (weightUnit === 'kg') return kg.toFixed(1) + ' kg';
+      const { st, lbs } = kgToStLbs(kg);
+      return `${st}st ${lbs.toFixed(1)}lb`;
+    }
+
+    function formatDiff(diffKg) {
+      const abs = Math.abs(diffKg);
+      if (weightUnit === 'kg') return abs.toFixed(1) + ' kg';
+      const totalLbs = abs / 0.453592;
+      const st  = Math.floor(totalLbs / 14);
+      const lbs = Math.round((totalLbs % 14) * 10) / 10;
+      return st > 0 ? `${st}st ${lbs.toFixed(1)}lb` : `${lbs.toFixed(1)}lb`;
+    }
+
+    // ── Unit switching ────────────────────────────────────
+    function setUnit(newUnit) {
+      // Capture whatever is currently in the modal DOM before switching
+      if (currentDay && WEIGH_IN_DAYS.includes(currentDay)) syncWeightFromDOM();
+
+      weightUnit = newUnit;
+      try { localStorage.setItem('30day_weight_unit', newUnit); } catch(e) {}
+
+      // Pre-fill stones/lbs from kg if switching to stlbs
+      if (newUnit === 'stlbs' && tempWeightKg) {
+        const { st, lbs } = kgToStLbs(tempWeightKg);
+        tempSt  = st.toString();
+        tempLbs = lbs.toFixed(1);
+      }
+
+      refreshUnitButtons();
+      updateWeightDisplay();
+      if (currentDay && WEIGH_IN_DAYS.includes(currentDay)) renderWeighIn(currentDay);
+    }
+
+    function syncWeightFromDOM() {
+      if (weightUnit === 'kg') {
+        const el = document.getElementById('weight-input-kg');
+        if (el) tempWeightKg = el.value ? parseFloat(el.value) : null;
+      } else {
+        const stEl  = document.getElementById('weight-input-st');
+        const lbsEl = document.getElementById('weight-input-lbs');
+        if (stEl)  tempSt  = stEl.value;
+        if (lbsEl) tempLbs = lbsEl.value;
+        const kg = stLbsToKg(tempSt, tempLbs);
+        tempWeightKg = kg > 0 ? kg : null;
+      }
+    }
+
+    function updateTempWeightFromStLbs() {
+      const kg = stLbsToKg(tempSt, tempLbs);
+      tempWeightKg = kg > 0 ? kg : null;
+    }
+
+    function refreshUnitButtons() {
+      document.getElementById('btn-kg').classList.toggle('active', weightUnit === 'kg');
+      document.getElementById('btn-stlbs').classList.toggle('active', weightUnit === 'stlbs');
+    }
+
+    // ── Grid & stats ──────────────────────────────────────
+    function getDayScore(d) {
+      const day = data[d]; if (!day) return 0;
+      return HABITS.filter(h => day[h.id]).length;
+    }
+    function isDayComplete(d) { return getDayScore(d) === HABITS.length; }
 
     function buildLegend() {
       document.getElementById('habits-legend').innerHTML = HABITS.map(h => `
         <div class="habit-badge">
           <div class="dot" style="background:${h.color}"></div>
           ${h.icon} ${h.name}
-        </div>
-      `).join('');
+        </div>`).join('');
     }
 
     function buildGrid() {
       const grid = document.getElementById('days-grid');
       grid.innerHTML = '';
       for (let d = 1; d <= TOTAL_DAYS; d++) {
-        const score = getDayScore(d);
-        const complete = isDayComplete(d);
-        const isWeighDay = WEIGH_IN_DAYS.includes(d);
+        const score     = getDayScore(d);
+        const complete  = isDayComplete(d);
+        const isWDay    = WEIGH_IN_DAYS.includes(d);
         const hasWeight = data[d] && data[d].weight;
         const card = document.createElement('div');
         card.className = 'day-card' + (complete ? ' completed' : '') + (score > 0 ? ' has-progress' : '');
@@ -211,43 +306,28 @@
           <div class="mini-habits">
             ${HABITS.map(h => `<div class="mini-dot ${data[d] && data[d][h.id] ? 'done' : ''}" style="background:${h.color}" title="${h.name}"></div>`).join('')}
           </div>
-          ${isWeighDay ? `<div class="scale-icon" title="Weigh-in day">${hasWeight ? '⚖️' : '🔘'}</div>` : ''}
-        `;
+          ${isWDay ? `<div class="scale-icon" title="Weigh-in day">${hasWeight ? '⚖️' : '🔘'}</div>` : ''}`;
         card.onclick = () => openModal(d);
         grid.appendChild(card);
       }
     }
 
     function updateStats() {
-      let completedDays = 0;
-      let totalHabitsDone = 0;
-      let bestStreak = 0;
-      let streakCount = 0;
-
+      let completed = 0, totalDone = 0, best = 0, streak = 0;
       for (let d = 1; d <= TOTAL_DAYS; d++) {
-        totalHabitsDone += getDayScore(d);
-        if (isDayComplete(d)) {
-          completedDays++;
-          streakCount++;
-          bestStreak = Math.max(bestStreak, streakCount);
-        } else {
-          streakCount = 0;
-        }
+        totalDone += getDayScore(d);
+        if (isDayComplete(d)) { completed++; streak++; best = Math.max(best, streak); }
+        else streak = 0;
       }
+      let cur = 0;
+      for (let d = TOTAL_DAYS; d >= 1; d--) { if (isDayComplete(d)) cur++; else break; }
 
-      let currentStreak = 0;
-      for (let d = TOTAL_DAYS; d >= 1; d--) {
-        if (isDayComplete(d)) currentStreak++;
-        else break;
-      }
-
-      document.getElementById('days-done').textContent = completedDays;
-      document.getElementById('days-left').textContent = TOTAL_DAYS - completedDays;
-      document.getElementById('overall-bar').style.width = ((completedDays / TOTAL_DAYS) * 100) + '%';
-      document.getElementById('current-streak').textContent = currentStreak;
-      document.getElementById('best-streak').textContent = bestStreak;
-      document.getElementById('total-habits').textContent = totalHabitsDone;
-
+      document.getElementById('days-done').textContent     = completed;
+      document.getElementById('days-left').textContent     = TOTAL_DAYS - completed;
+      document.getElementById('overall-bar').style.width   = ((completed / TOTAL_DAYS) * 100) + '%';
+      document.getElementById('current-streak').textContent = cur;
+      document.getElementById('best-streak').textContent   = best;
+      document.getElementById('total-habits').textContent  = totalDone;
       updateWeightDisplay();
     }
 
@@ -256,42 +336,42 @@
       const w15 = data[15] && data[15].weight ? data[15].weight : null;
       const w30 = data[30] && data[30].weight ? data[30].weight : null;
 
-      const el1  = document.getElementById('w1');
-      const el15 = document.getElementById('w15');
-      const el30 = document.getElementById('w30');
-
-      el1.textContent  = w1  ? w1  + ' kg' : '—';
-      el15.textContent = w15 ? w15 + ' kg' : '—';
-      el30.textContent = w30 ? w30 + ' kg' : '—';
-
-      el1.className  = 'we-val' + (w1  ? '' : ' empty');
-      el15.className = 'we-val' + (w15 ? '' : ' empty');
-      el30.className = 'we-val' + (w30 ? '' : ' empty');
+      const set = (id, kg) => {
+        const el = document.getElementById(id);
+        el.textContent = formatWeight(kg) || '—';
+        el.className   = 'we-val' + (kg ? '' : ' empty');
+      };
+      set('w1', w1); set('w15', w15); set('w30', w30);
+      refreshUnitButtons();
 
       const diffEl = document.getElementById('weight-diff');
-      const base = w1;
+      const base   = w1;
       const latest = w30 || w15;
-
       if (base && latest) {
-        const diff = (parseFloat(latest) - parseFloat(base)).toFixed(1);
+        const diff  = latest - base;
         const label = w30 ? 'overall' : 'at halfway';
-        if (diff < 0) {
-          diffEl.innerHTML = `<span class="loss">▼ ${Math.abs(diff)} kg lost ${label} 🎉</span>`;
-        } else if (diff > 0) {
-          diffEl.innerHTML = `<span class="gain">▲ ${diff} kg gained ${label}</span>`;
-        } else {
-          diffEl.innerHTML = `<span class="neutral">No change in weight ${label}</span>`;
-        }
+        if (diff < 0) diffEl.innerHTML = `<span class="loss">▼ ${formatDiff(diff)} lost ${label} 🎉</span>`;
+        else if (diff > 0) diffEl.innerHTML = `<span class="gain">▲ ${formatDiff(diff)} gained ${label}</span>`;
+        else diffEl.innerHTML = `<span class="neutral">No change in weight ${label}</span>`;
       } else {
         diffEl.innerHTML = '';
       }
     }
 
+    // ── Modal ─────────────────────────────────────────────
     function openModal(dayNum) {
-      currentDay = dayNum;
-      tempChecks = Object.assign({}, data[dayNum] || {});
-      tempWeight = (data[dayNum] && data[dayNum].weight) ? data[dayNum].weight : '';
-      document.getElementById('modal-title').textContent = 'Day ' + dayNum;
+      currentDay   = dayNum;
+      tempChecks   = Object.assign({}, data[dayNum] || {});
+      tempWeightKg = data[dayNum] && data[dayNum].weight ? data[dayNum].weight : null;
+
+      if (weightUnit === 'stlbs' && tempWeightKg) {
+        const { st, lbs } = kgToStLbs(tempWeightKg);
+        tempSt = st.toString(); tempLbs = lbs.toFixed(1);
+      } else {
+        tempSt = ''; tempLbs = '';
+      }
+
+      document.getElementById('modal-title').textContent   = 'Day ' + dayNum;
       document.getElementById('today-badge').style.display = 'none';
       renderWeighIn(dayNum);
       renderHabitsList();
@@ -303,36 +383,59 @@
       const container = document.getElementById('weigh-in-container');
       if (!WEIGH_IN_DAYS.includes(dayNum)) { container.innerHTML = ''; return; }
 
-      // Build previous weight hint
+      // Previous weight hint
       let prevHint = '';
       if (dayNum === 15 && data[1] && data[1].weight) {
-        prevHint = `<div class="weigh-in-prev">Day 1 weight: <span>${data[1].weight} kg</span></div>`;
+        prevHint = `<div class="weigh-in-prev">Day 1: <span>${formatWeight(data[1].weight)}</span></div>`;
       } else if (dayNum === 30) {
         const parts = [];
-        if (data[1]  && data[1].weight)  parts.push(`Day 1: <span>${data[1].weight} kg</span>`);
-        if (data[15] && data[15].weight) parts.push(`Day 15: <span>${data[15].weight} kg</span>`);
+        if (data[1]  && data[1].weight)  parts.push(`Day 1: <span>${formatWeight(data[1].weight)}</span>`);
+        if (data[15] && data[15].weight) parts.push(`Day 15: <span>${formatWeight(data[15].weight)}</span>`);
         if (parts.length) prevHint = `<div class="weigh-in-prev">${parts.join(' &nbsp;·&nbsp; ')}</div>`;
+      }
+
+      let inputHTML = '';
+      if (weightUnit === 'kg') {
+        const val = tempWeightKg ? tempWeightKg.toFixed(1) : '';
+        inputHTML = `
+          <div class="weigh-in-row">
+            <input class="weigh-in-input" type="number" step="0.1" min="0" placeholder="Enter weight"
+              value="${val}" id="weight-input-kg"
+              oninput="tempWeightKg = this.value ? parseFloat(this.value) : null" />
+            <span class="weigh-in-unit">kg</span>
+          </div>`;
+      } else {
+        const stVal  = tempSt  !== '' ? tempSt  : (tempWeightKg ? kgToStLbs(tempWeightKg).st : '');
+        const lbsVal = tempLbs !== '' ? tempLbs : (tempWeightKg ? kgToStLbs(tempWeightKg).lbs.toFixed(1) : '');
+        inputHTML = `
+          <div class="stlbs-row">
+            <div class="stlbs-group">
+              <input class="stlbs-input" type="number" min="0" step="1" placeholder="0"
+                value="${stVal}" id="weight-input-st"
+                oninput="tempSt = this.value; updateTempWeightFromStLbs()" />
+              <span class="stlbs-unit">st</span>
+            </div>
+            <div class="stlbs-group">
+              <input class="stlbs-input" type="number" min="0" max="13.9" step="0.1" placeholder="0.0"
+                value="${lbsVal}" id="weight-input-lbs"
+                oninput="tempLbs = this.value; updateTempWeightFromStLbs()" />
+              <span class="stlbs-unit">lbs</span>
+            </div>
+          </div>`;
       }
 
       container.innerHTML = `
         <div class="weigh-in-box">
-          <h3>⚖️ Weigh-In — Day ${dayNum}</h3>
-          <div class="weigh-in-row">
-            <input
-              class="weigh-in-input"
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="Enter weight"
-              value="${tempWeight}"
-              id="weight-input"
-              oninput="tempWeight = this.value"
-            />
-            <span class="weigh-in-unit">kg</span>
+          <div class="weigh-in-box-header">
+            <div class="weigh-in-box-title">⚖️ Weigh-In — Day ${dayNum}</div>
+            <div class="modal-unit-toggle">
+              <button class="modal-unit-btn ${weightUnit === 'kg'     ? 'active' : ''}" onclick="setUnit('kg')">kg</button>
+              <button class="modal-unit-btn ${weightUnit === 'stlbs'  ? 'active' : ''}" onclick="setUnit('stlbs')">st &amp; lbs</button>
+            </div>
           </div>
+          ${inputHTML}
           ${prevHint}
-        </div>
-      `;
+        </div>`;
     }
 
     function renderHabitsList() {
@@ -346,38 +449,29 @@
           <div class="habit-check ${tempChecks[h.id] ? 'checked' : ''}" id="check-${h.id}">
             ${tempChecks[h.id] ? '✓' : ''}
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
     }
 
-    function toggleHabit(habitId) {
-      tempChecks[habitId] = !tempChecks[habitId];
-      const el = document.getElementById('check-' + habitId);
-      if (tempChecks[habitId]) {
-        el.classList.add('checked');
-        el.textContent = '✓';
-      } else {
-        el.classList.remove('checked');
-        el.textContent = '';
-      }
+    function toggleHabit(id) {
+      tempChecks[id] = !tempChecks[id];
+      const el = document.getElementById('check-' + id);
+      el.classList.toggle('checked', tempChecks[id]);
+      el.textContent = tempChecks[id] ? '✓' : '';
       updateCompleteBadge();
     }
 
     function updateCompleteBadge() {
-      const allDone = HABITS.every(h => tempChecks[h.id]);
-      document.getElementById('complete-badge').classList.toggle('show', allDone);
+      document.getElementById('complete-badge').classList.toggle('show', HABITS.every(h => tempChecks[h.id]));
     }
 
     function saveDay() {
+      if (WEIGH_IN_DAYS.includes(currentDay)) syncWeightFromDOM();
       data[currentDay] = { ...tempChecks };
       if (WEIGH_IN_DAYS.includes(currentDay)) {
-        if (tempWeight && parseFloat(tempWeight) > 0) {
-          data[currentDay].weight = parseFloat(tempWeight);
-        } else {
-          delete data[currentDay].weight;
-        }
+        if (tempWeightKg && tempWeightKg > 0) data[currentDay].weight = parseFloat(tempWeightKg.toFixed(3));
+        else delete data[currentDay].weight;
       }
-      save();
+      saveData();
       buildGrid();
       updateStats();
       closeModal();
@@ -392,6 +486,8 @@
       if (e.target === this) closeModal();
     });
 
+    // ── Init ──────────────────────────────────────────────
+    refreshUnitButtons();
     buildLegend();
     buildGrid();
     updateStats();
